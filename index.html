@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaming & Anime Quiz Hub</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e1e2f, #111119);
+            color: #ffffff;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #ff007f;
+            color: #ff007f;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            color: #00f0ff;
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .pro-title {
+            color: #ffaa00;
+            text-shadow: 0 0 10px rgba(255, 170, 0, 0.3);
+        }
+
+        p {
+            color: #b3b3b3;
+            margin-bottom: 30px;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .section-title {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .btn-card {
+            background: #2a2a40;
+            border: 2px solid transparent;
+            color: white;
+            padding: 18px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .pokemon-btn:hover { background: #ffcb05; color: #3b4cca; border-color: #3b4cca; box-shadow: 0 0 15px #ffcb05; }
+        .minecraft-btn:hover { background: #4a7227; color: white; border-color: #866043; box-shadow: 0 0 15px #4a7227; }
+        .anime-btn:hover { background: #ff6b6b; color: white; border-color: #c92a2a; box-shadow: 0 0 15px #ff6b6b; }
+        .sport-btn:hover { background: #339af0; color: white; border-color: #1c7ed6; box-shadow: 0 0 15px #339af0; }
+        .beyblade-btn:hover { background: #fcc419; color: #10111a; border-color: #e67e22; box-shadow: 0 0 15px #fcc419; }
+        .game-btn { background: #1f3333; border: 2px dashed #00f0ff; color: #00f0ff; }
+        .game-btn:hover { background: #00f0ff; color: #111119; box-shadow: 0 0 15px #00f0ff; }
+        .pro-btn { background: #332211; border: 2px solid #ffaa00; color: #ffaa00; }
+        .pro-btn:hover { background: #ffaa00; color: #111119; box-shadow: 0 0 15px #ffaa00; }
+
+        .xp-container {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        .xp-text {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        .xp-bar-bg {
+            background: #222;
+            width: 100%;
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .xp-bar-fill {
+            background: linear-gradient(90deg, #00f0ff, #ff007f);
+            width: 0%;
+            height: 100%;
+            transition: width 1s ease-out;
+            box-shadow: 0 0 8px #00f0ff;
+        }
+
+        .badge-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+        .badge-box {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            opacity: 0.25;
+            filter: grayscale(100%);
+            transition: all 0.5s ease;
+        }
+        .badge-box.unlocked {
+            opacity: 1;
+            filter: grayscale(0%);
+            border-color: #ffaa00;
+            background: rgba(255, 170, 0, 0.05);
+            box-shadow: 0 0 10px rgba(255, 170, 0, 0.15);
+        }
+        .badge-icon { font-size: 2rem; }
+        .badge-name { font-weight: bold; font-size: 0.9rem; color: #fff; }
+        .badge-desc { font-size: 0.75rem; color: #aaa; text-align: center; }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0 10px 0;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 170, 0, 0.2);
+        }
+        .leaderboard-table th { background: #ffaa00; color: #111119; padding: 12px; font-weight: bold; font-size: 1rem; }
+        .leaderboard-table td { padding: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 0.95rem; }
+        .leaderboard-table tr:last-child td { border-bottom: none; }
+        .challenge-name { font-weight: bold; text-align: left; padding-left: 15px !important; }
+        .player-name { color: #ffcc00; font-weight: 500; }
+        .score-value { color: #00f0ff; font-weight: bold; text-align: right; padding-right: 15px !important; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Quiz Hub</h1>
+        
+        <!-- BANNER LIVELLO & LIVELLO XP -->
+        <div class="xp-container">
+            <div class="xp-text">
+                <span>⭐ Grado: <span id="rank-name" style="color:#00f0ff;">Novizio</span></span>
+                <span>Liv. <span id="player-level" style="color:#ff007f;">1</span></span>
+            </div>
+            <div class="xp-bar-bg">
+                <div id="xp-fill" class="xp-bar-fill"></div>
+            </div>
+            <div style="font-size:0.75rem; color:#aaa; margin-top:5px; text-align:right;">
+                XP Totali: <span id="total-xp-num" style="color:#fff; font-weight:bold;">0</span>
+            </div>
+        </div>
+
+        <p>Scegli una categoria e scopri il tuo livello di esperienza!</p>
+        
+        <!-- SEZIONE QUIZ -->
+        <div class="category-grid">
+            <a href="poke.html" class="btn-card pokemon-btn">🔴 Quiz Pokémon</a>
+            <a href="mine.html" class="btn-card minecraft-btn">🟩 Quiz Minecraft</a>
+            <a href="anim.html" class="btn-card anime-btn">✨ Quiz Anime General</a>
+            <a href="sport.html" class="btn-card sport-btn">⚽ Quiz Sport</a>
+            <a href="bey.html" class="btn-card beyblade-btn">⚙️ Quiz Beyblade</a>
+        </div>
+
+        <!-- SEZIONE VIDEOGIOCHI ARCADE -->
+        <div class="section-title">
+            <h2>🕹️ Area Giochi Arcade</h2>
+            <p>Non solo quiz! In questa sezione potrai rilassarti e sfidare i tuoi record con divertenti mini-giochi direttamente nel browser.</p>
+            
+            <div class="category-grid">
+                <a href="snake.html" class="btn-card game-btn">
+                    🐍 Gioca a Snake
+                </a>
+                <a href="clicker.html" class="btn-card game-btn">
+                    🖱️ Gioca a Clicker
+                </a>
+            </div>
+        </div>
+
+        <!-- SEZIONE PRO PLAYER CHALLENGE -->
+        <div class="section-title">
+            <h2 class="pro-title">⚡ Pro Player Challenge</h2>
+            <p>Pensi di avere la stoffa del vero gamer competitivo? Metti alla prova le tue meccaniche fondamentali, calcola i tuoi tempi di reazione ed entra nella Top Tier.</p>
+            
+            <div class="category-grid">
+                <a href="cps.html" class="btn-card pro-btn">
+                    ⏱️ CPS Test (Click al Secondo)
+                </a>
+                <a href="riflessi.html" class="btn-card pro-btn">
+                    🟢 Test dei Riflessi
+                </a>
+                <a href="mira.html" class="btn-card pro-btn">
+                    🎯 Target Tracker (Aim Trainer)
+                </a>
+            </div>
+        </div>
+
+        <!-- TABELLONE RECORD ASSOLUTI -->
+        <div class="section-title">
+            <h2 style="color: #ffcc00; text-shadow: 0 0 10px rgba(255, 204, 0, 0.3);">🏆 Record Assoluti</h2>
+            <p style="margin-bottom: 15px;">I migliori punteggi rilevati sul tuo sistema:</p>
+            
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th style="text-align: left; padding-left: 15px;">Sfida</th>
+                        <th>Campione</th>
+                        <th style="text-align: right; padding-right: 15px;">Record</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="challenge-name">⏱️ CPS</td>
+                        <td class="player-name" id="holder-cps">Nessuno</td>
+                        <td class="score-value" id="top-cps">0.00 CPS</td>
+                    </tr>
+                    <tr>
+                        <td class="challenge-name">🟢 Riflessi</td>
+                        <td class="player-name" id="holder-reflex">Nessuno</td>
+                        <td class="score-value" id="top-reflex">-- ms</td>
+                    </tr>
+                    <tr>
+                        <td class="challenge-name">🎯 Mira</td>
+                        <td class="player-name" id="holder-aim">Nessuno</td>
+                        <td class="score-value" id="top-aim">0 Punti</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- BACHECA DEGLI OBIETTIVI -->
+        <div class="section-title">
+            <h2 style="color: #ffaa00; text-shadow: 0 0 10px rgba(255, 170, 0, 0.2);">🏅 Bacheca degli Obiettivi</h2>
+            <p style="margin-bottom: 15px;">Migliora i tuoi punteggi e completa i quiz per sbloccare i trofei!</p>
+            
+            <div class="badge-grid">
+                <div class="badge-box" id="badge-cps">
+                    <span class="badge-icon">🖱️</span>
+                    <span class="badge-name">Clicker God</span>
+                    <span class="badge-desc">Supera 9.00 CPS</span>
+                </div>
+                <div class="badge-box" id="badge-reflex">
+                    <span class="badge-icon">⚡</span>
+                    <span class="badge-name">Instinto Ultra</span>
+                    <span class="badge-desc">Sotto i 220ms</span>
+                </div>
+                <div class="badge-box" id="badge-aim">
+                    <span class="badge-icon">🎯</span>
+                    <span class="badge-name">Cecchino d'Élite</span>
+                    <span class="badge-desc">Almeno 20 Punti</span>
+                </div>
+                <div class="badge-box" id="badge-snake">
+                    <span class="badge-icon">🐍</span>
+                    <span class="badge-name">Ruler of Serpents</span>
+                    <span class="badge-desc">Almeno 100 Punti a Snake</span>
+                </div>
+                <div class="badge-box" id="badge-quiz-poke">
+                    <span class="badge-icon">🎒</span>
+                    <span class="badge-name">Mastro Pokémon</span>
+                    <span class="badge-desc">Quiz Pokémon ≥ 5 punti</span>
+                </div>
+                <div class="badge-box" id="badge-quiz-mine">
+                    <span class="badge-icon">🧱</span>
+                    <span class="badge-name">Architetto Cubico</span>
+                    <span class="badge-desc">Quiz Minecraft ≥ 5 punti</span>
+                </div>
+                <div class="badge-box" id="badge-quiz-anim">
+                    <span class="badge-icon">🌸</span>
+                    <span class="badge-name">Vero Otaku</span>
+                    <span class="badge-desc">Quiz Anime ≥ 5 punti</span>
+                </div>
+                <div class="badge-box" id="badge-quiz-sport">
+                    <span class="badge-icon">🏆</span>
+                    <span class="badge-name">Fuoriclasse</span>
+                    <span class="badge-desc">Quiz Sport ≥ 5 punti</span>
+                </div>
+                <div class="badge-box" id="badge-quiz-bey" style="grid-column: span 2; max-width: 50%; justify-self: center;">
+                    <span class="badge-icon">⚙️</span>
+                    <span class="badge-name">Blader Leggendario</span>
+                    <span class="badge-desc">Quiz Beyblade ≥ 5 punti</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function caricaHub() {
+            // 1. LETTURA RECORD GIOCHI
+            const savedCps = parseFloat(localStorage.getItem('pro_cps_record') || 0);
+            const holderCps = localStorage.getItem('pro_cps_holder') || "Nessuno";
+            document.getElementById('top-cps').textContent = savedCps.toFixed(2) + " CPS";
+            document.getElementById('holder-cps').textContent = holderCps;
+
+            const savedReflex = parseInt(localStorage.getItem('pro_reflex_record') || 0);
+            const holderReflex = localStorage.getItem('pro_reflex_holder') || "Nessuno";
+            if (savedReflex > 0) {
+                document.getElementById('top-reflex').textContent = savedReflex + " ms";
+                document.getElementById('holder-reflex').textContent = holderReflex;
+            } else {
+                document.getElementById('top-reflex').textContent = "-- ms";
+                document.getElementById('holder-reflex').textContent = "Nessuno";
+            }
+
+            const savedAim = parseInt(localStorage.getItem('pro_aim_record') || 0);
+            const holderAim = localStorage.getItem('pro_aim_holder') || "Nessuno";
+            document.getElementById('top-aim').textContent = savedAim + " Punti";
+            document.getElementById('holder-aim').textContent = holderAim;
+
+            const savedSnake = parseInt(localStorage.getItem('arcade_snake_highscore') || 0);
+
+            // 2. LETTURA RECORD QUIZ
+            const quizPoke = parseInt(localStorage.getItem('quiz_pokemon_best') || 0);
+            const quizMine = parseInt(localStorage.getItem('quiz_minecraft_best') || 0);
+            const quizAnim = parseInt(localStorage.getItem('quiz_anime_best') || 0);
+            const quizSport = parseInt(localStorage.getItem('quiz_sport_best') || 0);
+            const quizBey = parseInt(localStorage.getItem('quiz_beyblade_best') || 0);
+
+            // 3. CALCOLO ESPERIENZA (XP)
+            let totaleXp = 0;
+            totaleXp += Math.floor(savedCps * 20);
+            if (savedReflex > 0 && savedReflex < 1000) totaleXp += Math.floor((1000 - savedReflex) / 2);
+            totaleXp += (savedAim * 15);
+            totaleXp += (savedSnake * 2);
+
+            totaleXp += (quizPoke * 50);
+            totaleXp += (quizMine * 50);
+            totaleXp += (quizAnim * 50);
+            totaleXp += (quizSport * 50);
+            totaleXp += (quizBey * 50);
+
+            // 4. SBLOCCO VISIVO BADGE
+            if (savedCps >= 9.0) document.getElementById('badge-cps').classList.add('unlocked');
+            if (savedReflex > 0 && savedReflex <= 220) document.getElementById('badge-reflex').classList.add('unlocked');
+            if (savedAim >= 20) document.getElementById('badge-aim').classList.add('unlocked');
+            if (savedSnake >= 100) document.getElementById('badge-snake').classList.add('unlocked');
+
+            if (quizPoke >= 5) document.getElementById('badge-quiz-poke').classList.add('unlocked');
+            if (quizMine >= 5) document.getElementById('badge-quiz-mine').classList.add('unlocked');
+            if (quizAnim >= 5) document.getElementById('badge-quiz-anim').classList.add('unlocked');
+            if (quizSport >= 5) document.getElementById('badge-quiz-sport').classList.add('unlocked');
+            if (quizBey >= 5) document.getElementById('badge-quiz-bey').classList.add('unlocked');
+
+            // 5. CALCOLO LIVELLI E GRADO
+            const xpPerLivello = 300;
+            let livelloAttuale = Math.floor(totaleXp / xpPerLivello) + 1;
+            let xpRimanentiLivello = totaleXp % xpPerLivello;
+            let percentualeSbarra = (xpRimanentiLivello / xpPerLivello) * 100;
+
+            let grado = "Novizio 🐢";
+            if (livelloAttuale >= 3) grado = "Casual Gamer 🎮";
+            if (livelloAttuale >= 6) grado = "Pro Gamer ⚡";
+            if (livelloAttuale >= 10) grado = "Esports Athlete 🏆";
+            if (livelloAttuale >= 15) grado = "God Mode 👑";
+
+            document.getElementById('total-xp-num').textContent = totaleXp;
+            document.getElementById('player-level').textContent = livelloAttuale;
+            document.getElementById('rank-name').textContent = grado;
+            document.getElementById('xp-fill').style.width = percentualeSbarra + "%";
+        }
+
+        window.onload = caricaHub;
+    </script>
+</body>
+</html>

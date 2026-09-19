@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPS Test - Pro Player Challenge</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e1e2f, #111119);
+            color: #ffffff;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 450px;
+            width: 100%;
+        }
+        h1 { color: #ffaa00; text-shadow: 0 0 10px rgba(255, 170, 0, 0.3); }
+        .stats { font-size: 1.1rem; margin-bottom: 20px; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px; }
+        #click-area {
+            background: #2a2a40;
+            border: 3px solid #ffaa00;
+            border-radius: 15px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.05s ease, background 0.1s;
+        }
+        #click-area:active { transform: scale(0.98); background: #3d3d5c; }
+        .btn-back {
+            margin-top: 25px; display: inline-block; padding: 10px 20px;
+            background: transparent; border: 2px solid rgba(255,255,255,0.3);
+            color: white; text-decoration: none; border-radius: 8px; transition: 0.2s;
+        }
+        .btn-back:hover { background: rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⏱️ CPS Test</h1>
+        <p>Clicca il più velocemente possibile nell'area appena effettui il primo click!</p>
+        
+        <div class="stats">
+            <div>Tempo: <span id="timer">5.0</span>s</div>
+            <div>Click: <span id="clicks">0</span></div>
+            <div>Record attuale: <span id="high-score-cps">0.00</span> (<span id="record-holder">Nessuno</span>)</div>
+        </div>
+
+        <div id="click-area">CLICCA QUI PER INIZIARE</div>
+        
+        <a href="index.html" class="btn-back">⬅️ Torna all'Hub</a>
+    </div>
+
+    <script>
+        const clickArea = document.getElementById('click-area');
+        const timerElement = document.getElementById('timer');
+        const clicksElement = document.getElementById('clicks');
+        const highScoreCpsElement = document.getElementById('high-score-cps');
+        const recordHolderElement = document.getElementById('record-holder');
+
+        let clicks = 0;
+        let timeLeft = 5.0;
+        let active = false;
+        let started = false;
+        let timerId;
+
+        let savedCpsRecord = localStorage.getItem('pro_cps_record') || 0;
+        let savedCpsHolder = localStorage.getItem('pro_cps_holder') || "Nessuno";
+        highScoreCpsElement.textContent = parseFloat(savedCpsRecord).toFixed(2);
+        recordHolderElement.textContent = savedCpsHolder;
+
+        clickArea.addEventListener('mousedown', () => {
+            if (!started) {
+                started = true;
+                active = true;
+                clickArea.textContent = "CLICCA!!!";
+                timerId = setInterval(updateTimer, 100);
+            }
+
+            if (active) {
+                clicks++;
+                clicksElement.textContent = clicks;
+            }
+        });
+
+        function updateTimer() {
+            timeLeft -= 0.1;
+            if (timeLeft <= 0) {
+                timeLeft = 0;
+                active = false;
+                clearInterval(timerId);
+                endGame();
+            }
+            timerElement.textContent = timeLeft.toFixed(1);
+        }
+
+        function endGame() {
+            const cps = (clicks / 5).toFixed(2);
+            let rank = "Noob 🐢";
+            if (cps >= 6) rank = "Casual Gamer 🎮";
+            if (cps >= 9) rank = "Pro Player ⚡";
+            if (cps >= 12) rank = "God Mode 👑";
+
+            let isNewRecord = false;
+            if (parseFloat(cps) > parseFloat(savedCpsRecord)) {
+                // Chiede il nome SOLO se è record assoluto
+                let newHolder = prompt("🏆 NUOVO RECORD! Inserisci Nome e Cognome (o Nickname):") || "Anonimo";
+                
+                savedCpsRecord = cps;
+                savedCpsHolder = newHolder;
+                localStorage.setItem('pro_cps_record', cps);
+                localStorage.setItem('pro_cps_holder', newHolder);
+                
+                highScoreCpsElement.textContent = cps;
+                recordHolderElement.textContent = newHolder;
+                isNewRecord = true;
+            }
+
+            // Notifica visiva dell'obiettivo coerente con la bacheca dell'index
+            let htmlBonus = cps >= 9.0 ? `<br><span style="color: #00f0ff; font-size: 1rem; font-weight: bold;">🏆 OBIETTIVO HUB SBLOCCATO!</span>` : "";
+
+            clickArea.innerHTML = `Fine!<br>Il tuo CPS: ${cps}<br>${isNewRecord ? '🏆 RECORD REGISTRATO! 🏆<br>' : ''}${htmlBonus}Grado: ${rank}<br><br><small style="font-size:0.9rem; color:#aaa;">Clicca qui per riprovare</small>`;
+            
+            setTimeout(() => {
+                clickArea.addEventListener('click', resetGame, { once: true });
+            }, 200);
+        }
+
+        function resetGame() {
+            clicks = 0;
+            timeLeft = 5.0;
+            started = false;
+            active = false;
+            clicksElement.textContent = "0";
+            timerElement.textContent = "5.0";
+            clickArea.textContent = "CLICCA QUI PER INIZIARE";
+        }
+    </script>
+</body>
+</html>

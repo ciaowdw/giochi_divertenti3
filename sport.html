@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Sport</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1c2d3d, #0f171e); color: white; margin:0; display:flex; justify-content:center; align-items:center; height:100vh; }
+        .container { text-align:center; background:rgba(255,255,255,0.05); padding:40px; border-radius:20px; border:1px solid #339af0; max-width:500px; width:100%; box-sizing:border-box; }
+        h2 { color: #339af0; }
+        .options-grid { display: grid; gap: 10px; margin-top: 20px; }
+        .btn-option { background: #233443; color: white; padding: 14px; border: 1px solid #339af0; border-radius: 8px; cursor: pointer; font-size: 1.1rem; text-align: left; width: 100%; }
+        .btn-option:hover { background: #34495e; }
+        .back-btn { margin-top: 25px; background: #339af0; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>⚽ Quiz Sport</h2>
+        <div id="quiz-body"><p>Riscaldamento in corso... Caricamento...</p></div>
+        <a href="index.html" class="back-btn">Torna alla Home</a>
+    </div>
+    <script>
+        const questions = [
+            { q: "Quanti minuti dura un tempo regolamentare di una partita di calcio?", a: ["35 minuti", "40 minuti", "45 minuti", "50 -minuti"], correct: 2 },
+            { q: "Ogni quanti anni si disputano ufficialmente i Giochi Olimpici?", a: ["Ogni 2 anni", "Ogni 3 anni", "Ogni 4 anni", "Ogni 5 anni"], correct: 2 },
+            { q: "Quale leggendario cestista americano ha indossato lo storico numero 23 nei Chicago Bulls?", a: ["LeBron James", "Kobe Bryant", "Michael Jordan", "Shaquille O'Neal"], correct: 2 },
+            { q: "Nel tennis, come viene chiamato un servizio vincente in cui l'avversario non riesce nemmeno a toccare la pallina?", a: ["Ace", "Deuce", "Volley", "Smash"], correct: 0 },
+            { q: "Quanti giocatori di una singola squadra scendono contemporaneamente in campo in una partita di pallavolo?", a: ["5 giocatori", "6 giocatori", "7 giocatori", "11 giocatori"], correct: 1 },
+            { q: "Quale pilota detiene, insieme a Michael Schumacher, il record di 7 campionati del mondo di Formula 1 vinti?", a: ["Lewis Hamilton", "Sebastian Vettel", "Max Verstappen", "Fernando Alonso"], correct: 0 },
+            { q: "In quale nazione è nato originariamente lo sport del judo?", a: ["Cina", "Giappone", "Corea del Sud", "Thailandia"], correct: 1 },
+            { q: "Nel ciclismo professionistico, di quale colore è la celebre maglia indossata dal leader della classifica al Giro d'Italia?", a: ["Gialla", "Rosa", "Rossa", "Verde"], correct: 1 },
+            { q: "Quale nazione ha vinto il campionato mondiale di calcio FIFA disputatosi nel 2022 in Qatar?", a: ["Francia", "Brasile", "Argentina", "Croazia"], correct: 2 },
+            { q: "Come viene chiamato il punteggio massimo di 300 punti che si può ottenere lanciando solo strike nel bowling?", a: ["Perfect Game", "Strike Out", "Grand Slam", "Golden Frame"], correct: 0 },
+            { q: "Nello sport del rugby, quanti punti assegna una meta schiacciata oltre la linea di fondo campo prima della trasformazione?", a: ["3 punti", "4 punti", "5 punti", "7 punti"], correct: 2 },
+            { q: "In quale disciplina sportiva gli atleti si sfidano usando armi chiamate fioretto, spada e sciabola?", a: ["Tiro con l'arco", "Scherma", "Pentathlon", "Arti Marziali"], correct: 1 },
+            { q: "Quale velocista giamaicano detiene l'incredibile record mondiale dei 100 metri piani con un tempo di 9 secondi e 58 centesimi?", a: ["Carl Lewis", "Usain Bolt", "Yohan Blake", "Asafa Powell"], correct: 1 },
+            { q: "Nel nuoto, quale di questi stili non fa parte delle quattro specialità ufficiali delle competizioni olimpiche?", a: ["Delfino", "Cagnolino", "Dorso", "Rana"], correct: 1 },
+            { q: "Quanti anelli colorati intrecciati compongono la bandiera ufficiale dei Giochi Olimpici?", a: ["3 anelli", "4 anelli", "5 anelli", "6 anelli"], correct: 2 }
+        ];
+        let currentIdx = 0, score = 0;
+        function showQuestion() {
+            const quizBody = document.getElementById('quiz-body');
+            const cq = questions[currentIdx];
+            let html = `<p style="font-weight:bold;color:#339af0">Domanda ${currentIdx+1} di ${questions.length}</p><p style="font-size:1.2rem;margin-bottom:20px">${cq.q}</p><div class="options-grid">`;
+            cq.a.forEach((opt, i) => { html += `<button class="btn-option" onclick="checkAnswer(${i})">${opt}</button>`; });
+            quizBody.innerHTML = html + `</div>`;
+        }
+        function checkAnswer(si) {
+            const buttons = document.querySelectorAll('.btn-option');
+            buttons.forEach(b => b.removeAttribute('onclick'));
+            if (si === questions[currentIdx].correct) { buttons[si].style.background = "#4a7227"; score++; }
+            else { buttons[si].style.background = "#ff007f"; buttons[questions[currentIdx].correct].style.background = "#4a7227"; }
+            setTimeout(() => { currentIdx++; if (currentIdx < questions.length) showQuestion(); else showResults(); }, 1500);
+        }
+
+        // --- SISTEMA DI SALVATAGGIO PER L'HUB ---
+        function salvaRecordQuiz(punteggioOttenuto) {
+            let recordPrecedente = parseInt(localStorage.getItem('quiz_sport_best') || 0);
+            if (punteggioOttenuto > recordPrecedente) {
+                localStorage.setItem('quiz_sport_best', punteggioOttenuto);
+            }
+        }
+
+        function showResults() {
+            // Esegue il salvataggio automatico del record per l'hub
+            salvaRecordQuiz(score);
+
+            let rank = score === 15 ? "👑 Campione Olimpico" : score >= 11 ? "🥇 Atleta Professionista" : score >= 6 ? "🏃 Sportivo della Domenica" : "🥚 Spettatore da Divano";
+            let msg = score >= 11 ? "Straordinario! Sei salito sul gradino più alto del podio!" : "Allenati un po' di più per migliorare la tua forma fisica!";
+            
+            let htmlBonus = score >= 5 ? `<p style="color: #00f0ff; font-weight: bold; margin-top: 15px;">🏆 OBIETTIVO HUB SBLOCCATO! Hai ottenuto almeno 5 punti!</p>` : "";
+
+            document.getElementById('quiz-body').innerHTML = `
+                <h3 style="color:#339af0;font-size:1.8rem">Punteggio: ${score}/${questions.length}</h3>
+                <h4>Grado: ${rank}</h4>
+                <p style="color:#b3b3b3">${msg}</p>
+                ${htmlBonus}
+            `;
+        }
+        showQuestion();
+    </script>
+</body>
+</html>

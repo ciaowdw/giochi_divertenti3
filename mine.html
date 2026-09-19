@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Minecraft</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #111e11, #090f09);
+            color: #ffffff;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+            border: 2px solid #4a7227;
+            max-width: 500px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        h2 { color: #55ff55; text-shadow: 0 0 10px rgba(85,255,85,0.3); }
+        .options-grid { display: grid; gap: 10px; margin-top: 20px; }
+        .btn-option {
+            background: #2a3d2a; color: white; padding: 14px; border: 1px solid #4a7227;
+            border-radius: 8px; cursor: pointer; font-size: 1.1rem; text-align: left;
+            transition: background 0.2s; width: 100%;
+        }
+        .btn-option:hover { background: #3d5c3d; }
+        .back-btn {
+            margin-top: 25px; background: #866043; color: white; border: none;
+            padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold;
+            text-decoration: none; display: inline-block;
+            border-bottom: 4px solid #5c402d;
+        }
+        .back-btn:hover { background: #966d4f; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>🟩 Quiz Minecraft</h2>
+        <div id="quiz-body">
+            <p>Caricamento domande...</p>
+        </div>
+        <a href="index.html" class="back-btn">Torna alla Home</a>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "Qual è il primo strumento che dovresti fabbricare all'inizio del gioco?", a: ["Piccone di pietra", "Ascia di legno", "Piccone di legno", "Spada di legno"], correct: 2 },
+            { q: "Quale mostro (mob) esplode quando si avvicina troppo al giocatore?", a: ["Creeper", "Zombie", "Enderman", "Scheletro"], correct: 0 },
+            { q: "Quale minerale è necessario per attivare i circuiti e i meccanismi?", a: ["Lapislazzuli", "Redstone", "Quarzo", "Ferro"], correct: 1 },
+            { q: "Quanti blocchi di ossidiana servono come minimo per costruire la cornice di un portale del Nether?", a: ["8", "10", "12", "14"], correct: 1 },
+            { q: "Quale cibo calma e permette di addomesticare un lupo?", a: ["Pesce crudo", "Mela", "Carota", "Osso"], correct: 3 },
+            { q: "Come si chiama la dimensiona finale dove si trova l'Enderdrago?", a: ["L'End", "Il Nether", "Il Limbo", "L'Aether"], correct: 0 },
+            { q: "Cosa succede se un Creeper viene colpito da un fulmine?", a: ["Muore all'istante", "Diventa un Creeper Caricato", "Si sdoppia", "Diventa pacifico"], correct: 1 },
+            { q: "Quale materiale è persino più resistente del diamante per armi e armature?", a: ["Acciaio", "Netherite", "Ossidiana", "Smeraldo"], correct: 1 },
+            { q: "Come si chiama il creatore originale di Minecraft?", a: ["Notch", "Jeb", "Bill Gates", "Steve"], correct: 0 },
+            { q: "Con quale strumento si può raccogliere un blocco di ghiaccio senza romperlo?", a: ["Piccone con Tocco di Velluto", "Piccone con Fortuna III", "Cesoie", "Ascia d'oro"], correct: 0 },
+            { q: "Quale boss evochi posizionando 4 blocchi di Sabbia delle Anime a 'T' e 3 teste di scheletro?", a: ["Enderdrago", "Warden", "Wither", "Herobrine"], correct: 2 },
+            { q: "Di quanti blocchi effettivi si cammina nell'Overworld per ogni blocco percorso nel Nether?", a: ["3 blocchi", "5 blocchi", "8 blocchi", "16 blocchi"], correct: 2 },
+            { q: "Quale pozione ti permette di camminare sulla lava senza subire danni?", a: ["Pozione di Resistenza al Fuoco", "Pozione di Rigenerazione", "Pozione di Rapidità", "Pozione di Forza"], correct: 0 },
+            { q: "Qual è l'unico blocco che gli Enderman non possono assolutamente raccogliere?", a: ["Terra", "Sabbia", "Bedrock (Roccia di fondo)", "Gravel (Ghiaia)"], correct: 2 },
+            { q: "In quale struttura si trovano le preziose ali chiamate 'Elitre' (Elytra)?", a: ["Fortezza del Nether", "Città dell'End", "Monumento Oceanico", "Mansion della Foresta"], correct: 1 }
+        ];
+
+        let currentIdx = 0;
+        let score = 0;
+
+        function showQuestion() {
+            const quizBody = document.getElementById('quiz-body');
+            const currentQuestion = questions[currentIdx];
+            
+            let html = `
+                <p style="font-weight: bold; color: #55ff55;">Domanda ${currentIdx + 1} di ${questions.length}</p>
+                <p style="font-size: 1.2rem; margin-bottom: 20px;">${currentQuestion.q}</p>
+                <div class="options-grid">
+            `;
+            
+            currentQuestion.a.forEach((option, index) => {
+                html += `<button class="btn-option" onclick="checkAnswer(${index})">${option}</button>`;
+            });
+            
+            html += `</div>`;
+            quizBody.innerHTML = html;
+        }
+
+        function checkAnswer(selectedIndex) {
+            const currentQuestion = questions[currentIdx];
+            const buttons = document.querySelectorAll('.btn-option');
+            
+            buttons.forEach(btn => btn.removeAttribute('onclick'));
+            
+            if (selectedIndex === currentQuestion.correct) {
+                buttons[selectedIndex].style.background = "#4a7227";
+                score++;
+            } else {
+                buttons[selectedIndex].style.background = "#ff007f";
+                buttons[currentQuestion.correct].style.background = "#4a7227";
+            }
+            
+            setTimeout(() => {
+                currentIdx++;
+                if (currentIdx < questions.length) {
+                    showQuestion();
+                } else {
+                    showResults();
+                }
+            }, 1500);
+        }
+
+        // --- FUNZIONE DI SALVATAGGIO RECODR PER L'HUB ---
+        function salvaRecordQuiz(punteggioOttenuto) {
+            let recordPrecedente = parseInt(localStorage.getItem('quiz_minecraft_best') || 0);
+            if (punteggioOttenuto > recordPrecedente) {
+                localStorage.setItem('quiz_minecraft_best', punteggioOttenuto);
+            }
+        }
+
+        function showResults() {
+            // Esegue il salvataggio automatico del record per comunicare con l'index.html
+            salvaRecordQuiz(score);
+
+            const quizBody = document.getElementById('quiz-body');
+            let rankTitle = "";
+            let msg = "";
+            
+            if (score === 15) {
+                rankTitle = "👑 Leggenda di Minecraft!";
+                msg = "Incredibile! Hai sconfitto l'Enderdrago, il Wither e conosci ogni segreto tecnico. Il mondo di gioco non ha segreti per te.";
+            } else if (score >= 11) {
+                rankTitle = "💎 Sviluppatore di Redstone / Pro";
+                msg = "Ottimo lavoro! Sei un giocatore esperto. Sai come sopravvivere e dominare le meccaniche più complesse.";
+            } else if (score >= 6) {
+                rankTitle = "🪵 Costruttore della Domenica";
+                msg = "Te la cavi bene! Conosci le basi della sopravvivenza, ma forse passi troppo tempo a costruire casette di terra.";
+            } else {
+                rankTitle = "🥚 Greenhorn (Noob)";
+                msg = "Hai totalizzato pochissimi punti. Fai attenzione ai Creeper e torna a ripassare il ricettario di crafting!";
+            }
+            
+            let htmlBonus = score >= 5 ? `<p style="color: #ffaa00; font-weight: bold; margin-top: 15px;">🏆 OBIETTIVO HUB SBLOCCATO! Hai ottenuto almeno 5 punti!</p>` : "";
+
+            quizBody.innerHTML = `
+                <h3 style="color: #55ff55; font-size: 1.8rem; margin-top: 20px;">Punteggio: ${score} / ${questions.length}</h3>
+                <h4 style="color: #ffffff; font-size: 1.4rem;">Grado: ${rankTitle}</h4>
+                <p style="color: #b3b3b3; line-height: 1.6;">${msg}</p>
+                ${htmlBonus}
+            `;
+        }
+
+        showQuestion();
+        
+    </script>
+</body>
+</html>

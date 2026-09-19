@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Clicker Game</title>
+    <!-- Collega lo stile esterno del clicker -->
+    <link rel="stylesheet" href="clicker-style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h2>🕹️ Clicker Alpha</h2>
+        
+        <div class="stat-box">
+            <div id="level-display" class="level-title">LIVELLO 1: Isola Iniziale</div>
+            <div class="stat-title">Monete Totali</div>
+            <div id="coins" class="stat-value">0</div>
+            <div id="cps-display" class="cps-title">Monete al secondo: 0</div>
+        </div>
+
+        <!-- Pulsantone Moneta -->
+        <div class="click-btn" onclick="clickCoin()">🪙</div>
+
+        <!-- NEGOZIO POTENZIAMENTI -->
+        <div class="shop-section">
+            <div class="shop-title">🛒 Potenziamenti & Livelli</div>
+            
+            <!-- Upgrade 1 -->
+            <div class="upgrade-item">
+                <div class="upgrade-info">
+                    <p class="upgrade-name">Super Click (Liv. <span id="click-lv">1</span>)</p>
+                    <p class="upgrade-desc">+1 moneta per ogni click</p>
+                </div>
+                <button id="up-click-btn" class="buy-btn" onclick="buyUpgrade('click')">Costo: 15</button>
+            </div>
+
+            <!-- Upgrade 2 -->
+            <div class="upgrade-item">
+                <div class="upgrade-info">
+                    <p class="upgrade-name">Auto-Miner (Liv. <span id="auto-lv">0</span>)</p>
+                    <p class="upgrade-desc">+1 moneta in automatico al secondo</p>
+                </div>
+                <button id="up-auto-btn" class="buy-btn" onclick="buyUpgrade('auto')">Costo: 50</button>
+            </div>
+
+            <!-- Upgrade Livello mappa -->
+            <div class="upgrade-item">
+                <div class="upgrade-info">
+                    <p class="upgrade-name">Sblocca Prossimo Livello</p>
+                    <p id="next-level-desc" class="upgrade-desc">Passa al livello 2 (Mondo Sotterraneo)</p>
+                </div>
+                <button id="up-level-btn" class="buy-btn" onclick="nextLevel()">Costo: 200</button>
+            </div>
+        </div>
+
+        <a href="index.html" class="back-btn">Torna alla Home</a>
+    </div>
+
+    <!-- Collega la logica esterna del clicker -->
+    <script src="clicker-script.js"></script>
+</body>
+</html>

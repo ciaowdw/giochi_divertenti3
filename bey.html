@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Beyblade</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #2b261d, #14110d); color: white; margin:0; display:flex; justify-content:center; align-items:center; height:100vh; }
+        .container { text-align:center; background:rgba(255,255,255,0.05); padding:40px; border-radius:20px; border:1px solid #920bd1; max-width:500px; width:100%; box-sizing:border-box; }
+        h2 { color: #fcc419; }
+        .options-grid { display: grid; gap: 10px; margin-top: 20px; }
+        .btn-option { background: #3d3423; color: white; padding: 14px; border: 1px solid #920bd1; border-radius: 8px; cursor: pointer; font-size: 1.1rem; text-align: left; width: 100%; }
+        .btn-option:hover { background: #544730; }
+        .back-btn { margin-top: 25px; background: #920bd1; color: #10111a; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>⚙️ Quiz Beyblade</h2>
+        <div id="quiz-body"><p>Let it Rip! Caricamento...</p></div>
+        <a href="index.html" class="back-btn">Torna alla Home</a>
+    </div>
+    <script>
+        const questions = [
+            { q: "Qual è il famosissimo urlo di battaglia usato dai Blader prima di lanciare la trottola?", a: ["Pronti, attacco, via!", "Tre, due, uno... Let it Rip!", "Forza Bit-Beast!", "Gira al massimo!"], correct: 1 },
+            { q: "Come si chiama il protagonista storico della primissima serie anime di Beyblade (2001)?", a: ["Gingka Hagane", "Valt Aoi", "Tyson Granger (Takao Aoki)", "Kai Hiwatari"], correct: 2 },
+            { q: "Qual è lo spirito leggendario (Bit-Beast) racchiuso nel Beyblade di Tyson?", a: ["Driger", "Draciel", "Dranzer", "Dragoon"], correct: 3 },
+            { q: "In Beyblade Metal Fusion, qual è il nome del Bey di Gingka?", a: ["Storm Pegasus", "Lightning L-Drago", "Rock Leone", "Flame Sagittario"], correct: 0 },
+            { q: "Quale di questi Blader è il rivale dal carattere freddo e usa il Bit-Beast della fenice Dranzer?", a: ["Max", "Ray", "Kai", "Kenny"], correct: 2 },
+            { q: "Qual è la caratteristica unica e micidiale di L-Drago rispetto alla maggior parte degli altri Bey?", a: ["È indistruttibile", "Ruota in senso antiorario (sinistra)", "È fatto di puro diamante", "Salta fuori dallo stadio"], correct: 1 },
+            { q: "In Beyblade Burst, come viene chiamata la vittoria che avviene quando il Bey avversario si smonta in tre pezzi?", a: ["Survivor Finish", "Ring Out Finish", "Burst Finish", "Xtreme Finish"], correct: 2 },
+            { q: "Qual è il nome del protagonista di Beyblade Burst, compagno di Victory Valkyrie?", a: ["Shu Kurenai", "Valt Aoi", "Free De La Hoya", "Aiger Akabane"], correct: 1 },
+            { q: "Nei tornei ufficiali di Beyblade X, quanti punti assegna un 'Xtreme Finish' spingendo il nemico nella tasca centrale?", a: ["1 punto", "2 punti", "3 punti", "4 punti"], correct: 2 },
+            { q: "Quali sono i quattro principali tipi (tipologie) di Beyblade esistenti?", a: ["Fuoco, Acqua, Terra, Aria", "Attacco, Difesa, Resistenza, Bilanciamento", "Leggero, Medio, Pesante, Ultra", "Metallo, Plastica, Gomma, Resina"], correct: 1 },
+            { q: "Come si chiama il temibile leader della 'Nebulosa Oscura' in Metal Fusion?", a: ["Ryuga", "Doji", "Kyoya", "Tsubasa"], correct: 1 },
+            { q: "Qual è lo strumento meccanico a striscia dentata o a cordino che serve per dare la massima rotazione al lancio?", a: ["Bit-Protector", "Launcher (Lanciatore)", "Weight Disk", "Ratchet"], correct: 1 },
+            { q: "Nella serie classica, chi è il ragazzo esperto di tecnologia che analizza i dati dei Bey sul suo computer?", a: ["Kenny (il Professore)", "Benkei", "Kenta", "Xander"], correct: 0 },
+            { q: "Nelle regole ufficiali 3on3, cosa succede se cambi parti del Bey a match iniziato senza che un pezzo si sia rotto?", a: ["Niente, è legale", "Subisci una penalità o sconfitta a tavolino", "Ripeti la sfida", "Guadagni un punto bonus"], correct: 1 },
+            { q: "Qual è il nome dell'ultima serie e generazione di Beyblade introdotta sul mercato?", a: ["Beyblade G-Revolution", "Beyblade Shogun Steel", "Beyblade Burst QuadStrike", "Beyblade X"], correct: 3 }
+        ];
+        let currentIdx = 0, score = 0;
+        function showQuestion() {
+            const quizBody = document.getElementById('quiz-body');
+            const cq = questions[currentIdx];
+            let html = `<p style="font-weight:bold;color:#fcc419">Domanda ${currentIdx+1} di ${questions.length}</p><p style="font-size:1.2rem;margin-bottom:20px">${cq.q}</p><div class="options-grid">`;
+            cq.a.forEach((opt, i) => { html += `<button class="btn-option" onclick="checkAnswer(${i})">${opt}</button>`; });
+            quizBody.innerHTML = html + `</div>`;
+        }
+        function checkAnswer(si) {
+            const buttons = document.querySelectorAll('.btn-option');
+            buttons.forEach(b => b.removeAttribute('onclick'));
+            if (si === questions[currentIdx].correct) { buttons[si].style.background = "#4a7227"; score++; }
+            else { buttons[si].style.background = "#ff007f"; buttons[questions[currentIdx].correct].style.background = "#4a7227"; }
+            setTimeout(() => { currentIdx++; if (currentIdx < questions.length) showQuestion(); else showResults(); }, 1500);
+        }
+
+        // --- FUNZIONE DI SALVATAGGIO RECODR PER L'HUB ---
+        function salvaRecordQuiz(punteggioOttenuto) {
+            let recordPrecedente = parseInt(localStorage.getItem('quiz_beyblade_best') || 0);
+            if (punteggioOttenuto > recordPrecedente) {
+                localStorage.setItem('quiz_beyblade_best', punteggioOttenuto);
+            }
+        }
+
+        function showResults() {
+            // Esegue il salvataggio automatico prima di mostrare la schermata finale
+            salvaRecordQuiz(score);
+
+            let rank = score === 15 ? "👑 Campione del Mondo WBBA" : score >= 11 ? "🔥 Blader di Livello Élite" : score >= 6 ? "⚙️ Meccanico dei Bey" : "🥚 Lanciatore Fallito";
+            let msg = score >= 11 ? "Spettacolare! Hai scatenato lo spirito del tuo Bit-Beast al massimo potenziale!" : "Il tuo Bey ha smesso di girare troppo presto. Torna ad allenarti nel Beystadium!";
+            
+            let htmlBonus = score >= 5 ? `<p style="color: #00f0ff; font-weight: bold; margin-top: 15px;">🏆 OBIETTIVO HUB SBLOCCATO! Hai ottenuto almeno 5 punti!</p>` : "";
+
+            document.getElementById('quiz-body').innerHTML = `
+                <h3 style="color:#fcc419;font-size:1.8rem">Punteggio: ${score}/${questions.length}</h3>
+                <h4>Grado: ${rank}</h4>
+                <p style="color:#b3b3b3">${msg}</p>
+                ${htmlBonus}
+            `;
+        }
+        showQuestion();
+    </script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Anime</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #2f1e2e, #111119); color: white; margin:0; display:flex; justify-content:center; align-items:center; height:100vh; }
+        .container { text-align:center; background:rgba(255,255,255,0.05); padding:40px; border-radius:20px; border:1px solid #ff6b6b; max-width:500px; width:100%; box-sizing:border-box; }
+        h2 { color: #ff6b6b; }
+        .options-grid { display: grid; gap: 10px; margin-top: 20px; }
+        .btn-option { background: #3d2a3a; color: white; padding: 14px; border: 1px solid #ff6b6b; border-radius: 8px; cursor: pointer; font-size: 1.1rem; text-align: left; width: 100%; }
+        .btn-option:hover { background: #5c3d58; }
+        .back-btn { margin-top: 25px; background: #ff6b6b; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>✨ Quiz Anime General</h2>
+        <div id="quiz-body"><p>Caricamento...</p></div>
+        <a href="index.html" class="back-btn">Torna alla Home</a>
+    </div>
+    <script>
+        const questions = [
+            { q: "Qual è l'obiettivo principale di Luffy in One Piece?", a: ["Diventare Hokage", "Trovare il One Piece e diventare il Re dei Pirati", "Distruggere la Marina", "Sconfiggere Goku"], correct: 1 },
+            { q: "In Naruto, come si chiama la volpe a nove code sigillata dentro di lui?", a: ["Kurama", "Shukaku", "Matatabi", "Gyuki"], correct: 0 },
+            { q: "Chi è l'autore del manga di Dragon Ball?", a: ["Eiichiro Oda", "Masashi Kishimoto", "Akira Toriyama", "Hajime Isayama"], correct: 2 },
+            { q: "In Death Note, qual è il cibo preferito dello Shinigami Ryuk?", a: ["Cioccolato", "Ramen", "Mele", "Sushi"], correct: 2 },
+            { q: "Quale anime è ambientato nel mondo virtuale di Aincrad?", a: ["Sword Art Online", "Log Horizon", "Overlord", "Cyberpunk"], correct: 0 },
+            { q: "In Attack on Titan (L'Attacco dei Giganti), come si chiama the protagonista?", a: ["Levi", "Armin", "Eren Jaeger", "Erwin"], correct: 2 },
+            { q: "Quale di questi anime parla di un quaderno in grado di uccidere le persone?", a: ["Bleach", "Death Note", "Code Geass", "Jujutsu Kaisen"], correct: 1 },
+            { q: "In Demon Slayer, qual è il tipo di respirazione principale di Tanjiro all'inizio?", a: ["Respirazione dell'Acqua", "Respirazione del Fuoco", "Respirazione del Fulmine", "Respirazione del Vento"], correct: 0 },
+            { q: "Chi è il protagonista di My Hero Academia?", a: ["Bakugo", "Todoroki", "Izuku Midoriya", "All Might"], correct: 2 },
+            { q: "In Hunter x Hunter, qual è l'arma preferita di Gon?", a: ["Una spada", "Una canna da pesca", "Un arco", "I suoi pugni"], correct: 1 },
+            { q: "Quale studio cinematografico ha prodotto 'La Città Incantata' e 'Il mio vicino Totoro'?", a: ["Studio Pierrot", "Studio Ghibli", "Toei Animation", "MAPPA"], correct: 1 },
+            { q: "In Fullmetal Alchemist, cosa cercano i fratelli Elric per riavere i loro corpi?", a: ["La Pietra Filosofale", "Le Sfere del Drago", "Il grimorio", "L'Elisir"], correct: 0 },
+            { q: "Quale personaggio di Jujutsu Kaisen possiede sei occhi e indossa una benda?", a: ["Yuji Itadori", "Megumi Fushiguro", "Satoru Gojo", "Sukuna"], correct: 2 },
+            { q: "In Tokyo Ghoul, qual è l'alimento che i Ghoul riescono a bere normalmente?", a: ["Latte", "Tè verde", "Caffè", "Succo d'arancia"], correct: 2 },
+            { q: "Quale anime sportivo racconta le sfide della squadra di pallavolo della Karasuno?", a: ["Kuroko no Basket", "Haikyu!!", "Blue Lock", "Free!"], correct: 1 }
+        ];
+        let currentIdx = 0, score = 0;
+        function showQuestion() {
+            const quizBody = document.getElementById('quiz-body');
+            const cq = questions[currentIdx];
+            let html = `<p style="font-weight:bold;color:#ff6b6b">Domanda ${currentIdx+1} di ${questions.length}</p><p style="font-size:1.2rem;margin-bottom:20px">${cq.q}</p><div class="options-grid">`;
+            cq.a.forEach((opt, i) => { html += `<button class="btn-option" onclick="checkAnswer(${i})">${opt}</button>`; });
+            quizBody.innerHTML = html + `</div>`;
+        }
+        function checkAnswer(si) {
+            const buttons = document.querySelectorAll('.btn-option');
+            buttons.forEach(b => b.removeAttribute('onclick'));
+            if (si === questions[currentIdx].correct) { buttons[si].style.background = "#4a7227"; score++; }
+            else { buttons[si].style.background = "#ff007f"; buttons[questions[currentIdx].correct].style.background = "#4a7227"; }
+            setTimeout(() => { currentIdx++; if (currentIdx < questions.length) showQuestion(); else showResults(); }, 1500);
+        }
+
+        // --- SISTEMA DI SALVATAGGIO PER L'HUB ---
+        function salvaRecordQuiz(punteggioOttenuto) {
+            let recordPrecedente = parseInt(localStorage.getItem('quiz_anime_best') || 0);
+            if (punteggioOttenuto > recordPrecedente) {
+                localStorage.setItem('quiz_anime_best', punteggioOttenuto);
+            }
+        }
+
+        function showResults() {
+            // Esegue il salvataggio automatico del record
+            salvaRecordQuiz(score);
+
+            let rank = score === 15 ? "👑 Otaku Supremo" : score >= 11 ? "🎌 Cosplayer Esperto" : score >= 6 ? "📖 Lettore di Manga" : "🥚 Spettatore Occasionale";
+            let msg = score >= 11 ? "Impressionante! Hai una cultura anime sconfinata." : "Non male, ma devi guardare qualche serie in più!";
+            
+            let htmlBonus = score >= 5 ? `<p style="color: #00f0ff; font-weight: bold; margin-top: 15px;">🏆 OBIETTIVO HUB SBLOCCATO! Hai ottenuto almeno 5 punti!</p>` : "";
+
+            document.getElementById('quiz-body').innerHTML = `
+                <h3 style="color:#ff6b6b;font-size:1.8rem">Punteggio: ${score}/${questions.length}</h3>
+                <h4>Grado: ${rank}</h4>
+                <p style="color:#b3b3b3">${msg}</p>
+                ${htmlBonus}
+            `;
+        }
+        showQuestion();
+    </script>
+</body>
+</html>

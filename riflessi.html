@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test dei Riflessi - Pro Player Challenge</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: #111119;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            user-select: none;
+        }
+        #game-zone {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.1s ease;
+            background-color: #ff3b30;
+        }
+        .text-panel {
+            background: rgba(0,0,0,0.6);
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        h1 { margin-top: 0; }
+        .record-text { font-size: 0.95rem; color: #ffaa00; margin-top: 10px; font-weight: bold; }
+        .btn-back {
+            margin-top: 20px; display: inline-block; padding: 10px 20px;
+            background: #2a2a40; border: 1px solid rgba(255,255,255,0.2);
+            color: white; text-decoration: none; border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-zone">
+        <div class="text-panel" id="panel">
+            <h1 id="title">🔴 Aspetta il VERDE</h1>
+            <p id="instruction">Clicca sullo schermo in qualsiasi punto per avviare il test.</p>
+            <div class="record-text">Record Assoluto: <span id="best-reflex">--</span> ms (<span id="record-holder">Nessuno</span>)</div>
+            <a href="index.html" class="btn-back" onclick="event.stopPropagation();">⬅️ Torna all'Hub</a>
+        </div>
+    </div>
+
+    <script>
+        const gameZone = document.getElementById('game-zone');
+        const title = document.getElementById('title');
+        const instruction = document.getElementById('instruction');
+        const bestReflexElement = document.getElementById('best-reflex');
+        const recordHolderElement = document.getElementById('record-holder');
+
+        let state = "idle"; 
+        let startTime, timeoutId;
+
+        let savedReflexRecord = localStorage.getItem('pro_reflex_record') || Infinity;
+        let savedReflexHolder = localStorage.getItem('pro_reflex_holder') || "Nessuno";
+
+        if (savedReflexRecord !== Infinity) {
+            bestReflexElement.textContent = savedReflexRecord;
+            recordHolderElement.textContent = savedReflexHolder;
+        }
+
+        gameZone.addEventListener('mousedown', () => {
+            if (state === "idle" || state === "result") {
+                startTest();
+            } else if (state === "waiting") {
+                triggerFalseStart();
+            } else if (state === "green") {
+                triggerSuccess();
+            }
+        });
+
+        function startTest() {
+            state = "waiting";
+            gameZone.style.backgroundColor = "#ff3b30";
+            title.textContent = "🔴 Aspetta...";
+            instruction.textContent = "Clicca solo quando lo schermo diventa VERDE.";
+            
+            const randomTime = Math.random() * 3000 + 1500;
+            timeoutId = setTimeout(() => {
+                state = "green";
+                gameZone.style.backgroundColor = "#4cd964";
+                title.textContent = "🟢 CLICCA ORA!";
+                startTime = window.performance.now();
+            }, randomTime);
+        }
+
+        function triggerFalseStart() {
+            clearTimeout(timeoutId);
+            state = "result";
+            gameZone.style.backgroundColor = "#1e1e2f";
+            title.textContent = "⚠️ Troppo presto!";
+            instruction.textContent = "Hai cliccato prima del segnale verde. Riprova.";
+        }
+
+        function triggerSuccess() {
+            const endTime = window.performance.now();
+            const reactionTime = Math.round(endTime - startTime);
+            state = "result";
+            gameZone.style.backgroundColor = "#1e1e2f";
+            
+            let isNewRecord = false;
+            if (reactionTime < savedReflexRecord) {
+                // Chiede il nome SOLO se il tempo è minore del precedente record
+                let newHolder = prompt("🏆 VELOCITÀ RECORD! Inserisci Nome e Cognome:") || "Anonimo";
+                
+                savedReflexRecord = reactionTime;
+                savedReflexHolder = newHolder;
+                localStorage.setItem('pro_reflex_record', reactionTime);
+                localStorage.setItem('pro_reflex_holder', newHolder);
+                
+                bestReflexElement.textContent = reactionTime;
+                recordHolderElement.textContent = newHolder;
+                isNewRecord = true;
+            }
+
+            let feedback = "Riflessi divini! ⚡";
+            if (reactionTime > 220) feedback = "Ottimo tempo! 🔥";
+            if (reactionTime > 300) feedback = "Andamento medio 🎮";
+            if (reactionTime > 450) feedback = "Hai bisogno di un caffè... 🐢";
+
+            // Testo bonus visivo coerente con l'obiettivo sbloccato nell'Hub principale
+            let bonusText = reactionTime <= 220 ? "<br><span style='color: #00f0ff; font-weight: bold;'>🏆 OBIETTIVO HUB SBLOCCATO!</span>" : "";
+
+            title.textContent = `${reactionTime} ms`;
+            instruction.textContent = `${isNewRecord ? '🏆 NUOVO RECORD SALVATO! ' : ''}${feedback}${bonusText} Clicca ovunque per ricominciare.`;
+        }
+    </script>
+</body>
+</html>

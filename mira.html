@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Target Tracker - Pro Player Challenge</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #161623, #0b0b11);
+            color: #ffffff;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        .header { text-align: center; margin-bottom: 10px; }
+        h1 { color: #00f0ff; text-shadow: 0 0 10px rgba(0, 240, 255, 0.4); margin: 5px; }
+        .score-board { font-size: 1.1rem; color: #bbb; margin-bottom: 10px; }
+        
+        #arena {
+            width: 500px;
+            height: 400px;
+            background: #111119;
+            border: 3px solid #00f0ff;
+            border-radius: 12px;
+            position: relative;
+            cursor: crosshair;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+        }
+
+        .target {
+            width: 35px;
+            height: 35px;
+            background: radial-gradient(circle, #ff007f 40%, #111 41%, #ff007f 60%, white 100%);
+            border-radius: 50%;
+            position: absolute;
+            box-shadow: 0 0 12px #ff007f;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+        .target:active { transform: scale(0.8); }
+
+        #start-screen {
+            position: absolute; width: 100%; height: 100%;
+            background: rgba(11, 11, 17, 0.9);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            border-radius: 9px; padding: 20px; box-sizing: border-box;
+        }
+        button {
+            background: #00f0ff; color: #111119; border: none; padding: 12px 28px;
+            font-size: 1.2rem; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s;
+        }
+        button:hover { background: #00c2cf; transform: scale(1.05); }
+        .btn-back { margin-top: 15px; color: #aaa; text-decoration: none; font-size: 0.9rem; }
+        .btn-back:hover { color: #fff; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🎯 Target Tracker</h1>
+        <div class="score-board">
+            Tempo: <span id="timer">30</span>s | Score: <span id="score">0</span> | Record: <span id="high-score-aim">0</span> (<span id="record-holder">Nessuno</span>)
+        </div>
+    </div>
+
+    <div id="arena">
+        <div id="start-screen">
+            <h3 style="margin-bottom: 20px; text-align:center;">Colpisci più bersagli possibili in 30 secondi!</h3>
+            <button onclick="startGame()">AVVIA SFIDA</button>
+            <a href="index.html" class="btn-back">⬅️ Torna all'Hub</a>
+        </div>
+        <div id="target" class="target" style="display: none;"></div>
+    </div>
+
+    <script>
+        const arena = document.getElementById('arena');
+        const target = document.getElementById('target');
+        const startScreen = document.getElementById('start-screen');
+        const scoreWord = document.getElementById('score');
+        const timerWord = document.getElementById('timer');
+        const highScoreAimElement = document.getElementById('high-score-aim');
+        const recordHolderElement = document.getElementById('record-holder');
+
+        let score = 0;
+        let timeLeft = 30;
+        let gameInterval;
+        let targetTimeout;
+        let isPlaying = false;
+
+        // Carica il record precedente salvato nel browser
+        let savedAimRecord = parseInt(localStorage.getItem('pro_aim_record') || 0);
+        let savedAimHolder = localStorage.getItem('pro_aim_holder') || "Nessuno";
+        highScoreAimElement.textContent = savedAimRecord;
+        recordHolderElement.textContent = savedAimHolder;
+
+        // Quando il player colpisce il bersaglio
+        target.addEventListener('mousedown', (e) => {
+            e.stopPropagation(); // Evita che il click venga contato sull'arena (miss)
+            if (!isPlaying) return;
+            score++;
+            scoreWord.textContent = score;
+            moveTarget();
+        });
+
+        // Penalità di 1 punto se clicchi a vuoto nell'arena
+        arena.addEventListener('mousedown', () => {
+            if (!isPlaying) return;
+            if (score > 0) score--;
+            scoreWord.textContent = score;
+        });
+
+        function startGame() {
+            score = 0;
+            timeLeft = 30;
+            isPlaying = true;
+            scoreWord.textContent = score;
+            timerWord.textContent = timeLeft;
+            startScreen.style.display = 'none';
+            
+            moveTarget();
+            gameInterval = setInterval(() => {
+                timeLeft--;
+                timerWord.textContent = timeLeft;
+                if (timeLeft <= 0) endGame();
+            }, 1000);
+        }
+
+        function moveTarget() {
+            clearTimeout(targetTimeout);
+            if (!isPlaying) return;
+
+            // Calcola posizioni casuali interne all'arena mantenendo il target visibile
+            const maxX = arena.clientWidth - 40;
+            const maxY = arena.clientHeight - 40;
+            
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+
+            target.style.left = randomX + 'px';
+            target.style.top = randomY + 'px';
+            target.style.display = 'block';
+
+            // Il bersaglio si sposta da solo dopo 1.3 secondi se non lo colpisci
+            targetTimeout = setTimeout(moveTarget, 1300);
+        }
+
+        function endGame() {
+            isPlaying = false;
+            clearInterval(gameInterval);
+            clearTimeout(targetTimeout);
+            target.style.display = 'none';
+            
+            let isNewRecord = false;
+            if (score > savedAimRecord) {
+                // Chiede il nome SOLO in caso di record superato
+                let newHolder = prompt("🏆 MIRA RECORD! Inserisci Nome e Cognome:") || "Anonimo";
+
+                savedAimRecord = score;
+                savedAimHolder = newHolder;
+                localStorage.setItem('pro_aim_record', score);
+                localStorage.setItem('pro_aim_holder', newHolder);
+                
+                highScoreAimElement.textContent = score;
+                recordHolderElement.textContent = newHolder;
+                isNewRecord = true;
+            }
+            
+            // Messaggio di sblocco obiettivo coerente con la bacheca dell'index.html
+            let htmlBonus = score >= 20 ? '<p style="color:#00f0ff; font-weight:bold; margin-bottom:15px;">🏆 OBIETTIVO HUB SBLOCCATO!</p>' : '';
+
+            startScreen.innerHTML = `
+                <h2>Tempo Scaduto!</h2>
+                <p style="font-size:1.3rem; margin: 5px 0 5px 0;">Punteggio Finale: <strong>${score}</strong></p>
+                ${isNewRecord ? '<p style="color:#ffaa00; font-weight:bold; margin-bottom:5px;">🏆 NUOVO RECORD SALVATO! 🏆</p>' : ''}
+                ${htmlBonus}
+                <button onclick="startGame()">RIPROVA</button>
+                <a href="index.html" class="btn-back">⬅️ Torna all'Hub</a>
+            `;
+            startScreen.style.display = 'flex';
+        }
+    </script>
+</body>
+</html>

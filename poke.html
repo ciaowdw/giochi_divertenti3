@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Pokémon</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e1e2f, #111119);
+            color: #ffffff;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+        h2 { color: #ffcb05; text-shadow: 0 0 10px rgba(255,203,5,0.3); }
+        .options-grid { display: grid; gap: 10px; margin-top: 20px; }
+        .btn-option {
+            background: #2a2a40; color: white; padding: 14px; border: 1px solid #444;
+            border-radius: 8px; cursor: pointer; font-size: 1.1rem; text-align: left;
+            transition: background 0.2s; width: 100%;
+        }
+        .btn-option:hover { background: #3d3d5c; }
+        .back-btn {
+            margin-top: 25px; background: #ff007f; color: white; border: none;
+            padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold;
+            text-decoration: none; display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>🔴 Quiz Pokémon</h2>
+        <div id="quiz-body">
+            <p>Caricamento domande...</p>
+        </div>
+        <a href="index.html" class="back-btn">Torna alla Home</a>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "Qual è il numero di Pokédex di Bulbasaur?", a: ["001", "004", "007", "025"], correct: 0 },
+            { q: "Di che tipo è il Pokémon leggendario Mewtwo?", a: ["Buio", "Spettro", "Psico", "Folletto"], correct: 2 },
+            { q: "Quale pietra serve per far evolvere Pikachu in Raichu?", a: ["Pietrafocaia", "Pietratuono", "Pietrasolare", "Pietraidrica"], correct: 1 },
+            { q: "Qual è l'evoluzione finale di Charmander?", a: ["Charmeleon", "Dragonite", "Charizard", "Tyranitar"], correct: 2 },
+            { q: "Quanti stadi evolutivi massimi ha Eevee?", a: ["3", "5", "8", "9"], correct: 2 },
+            { q: "Quale di questi Pokémon è di tipo Fuoco/Volante?", a: ["Moltres", "Zapdos", "Articuno", "Lugia"], correct: 0 },
+            { q: "Chi è il rivale storico di Ash Ketchum nella prima serie?", a: ["Gary", "Brock", "Spighetto", "Arthemis"], correct: 0 },
+            { q: "Quale mossa infligge sempre un danno fisso pari a 40 PS?", a: ["Iper Raggio", "Ira di Drago", "Azione", "Scontro"], correct: 1 },
+            { q: "Di che generazione fa parte il leggendario Rayquaza?", a: ["Prima", "Seconda", "Terza", "Quarta"], correct: 2 },
+            { q: "Qual è il punto debole principale dei Pokémon di tipo Acqua?", a: ["Fuoco", "Erba e Elettro", "Terra e Roccia", "Acciaio"], correct: 1 },
+            { q: "Come si chiama la regione della prima generazione di giochi?", a: ["Johto", "Hoenn", "Sinnoh", "Kanto"], correct: 3 },
+            { q: "Quale Pokémon è noto per addormentare i nemici cantando?", a: ["Jigglypuff", "Meowth", "Snorlax", "Psyduck"], correct: 0 },
+            { q: "Quale tipo di Poké Ball ha il tasso di cattura del 100%?", a: ["Ultra Ball", "Mega Ball", "Master Ball", "Premier Ball"], correct: 2 },
+            { q: "Quale strumento impedisce a un Pokémon di evolversi?", a: ["Condividi Esp.", "Pietraeterna", "Monamuleto", "Fiammosfera"], correct: 1 },
+            { q: "Di che tipo è il Pokémon Arceus nella sua forma base?", a: ["Normale", "Drago", "Psico", "Lotta"], correct: 0 }
+        ];
+
+        let currentIdx = 0;
+        let score = 0;
+
+        function showQuestion() {
+            const quizBody = document.getElementById('quiz-body');
+            const currentQuestion = questions[currentIdx];
+            
+            let html = `
+                <p style="font-weight: bold; color: #ffcb05;">Domanda ${currentIdx + 1} di ${questions.length}</p>
+                <p style="font-size: 1.2rem; margin-bottom: 20px;">${currentQuestion.q}</p>
+                <div class="options-grid">
+            `;
+            
+            currentQuestion.a.forEach((option, index) => {
+                html += `<button class="btn-option" onclick="checkAnswer(${index})">${option}</button>`;
+            });
+            
+            html += `</div>`;
+            quizBody.innerHTML = html;
+        }
+
+        function checkAnswer(selectedIndex) {
+            const currentQuestion = questions[currentIdx];
+            const buttons = document.querySelectorAll('.btn-option');
+            
+            buttons.forEach(btn => btn.removeAttribute('onclick'));
+            
+            if (selectedIndex === currentQuestion.correct) {
+                buttons[selectedIndex].style.background = "#4a7227";
+                score++;
+            } else {
+                buttons[selectedIndex].style.background = "#ff007f";
+                buttons[currentQuestion.correct].style.background = "#4a7227";
+            }
+            
+            setTimeout(() => {
+                currentIdx++;
+                if (currentIdx < questions.length) {
+                    showQuestion();
+                } else {
+                    showResults();
+                }
+            }, 1500);
+        }
+
+        // --- FUNZIONE DI SALVATAGGIO RECORD PER L'HUB ---
+        function salvaRecordQuiz(punteggioOttenuto) {
+            let recordPrecedente = parseInt(localStorage.getItem('quiz_pokemon_best') || 0);
+            if (punteggioOttenuto > recordPrecedente) {
+                localStorage.setItem('quiz_pokemon_best', punteggioOttenuto);
+            }
+        }
+
+        function showResults() {
+            // Esegue il salvataggio automatico del record per l'hub
+            salvaRecordQuiz(score);
+
+            const quizBody = document.getElementById('quiz-body');
+            let title = "";
+            let msg = "";
+            
+            if (score === 15) {
+                title = "👑 Campione della Lega Pokémon!";
+                msg = "Incredibile! Conosci ogni singolo dettaglio. Sei un vero Maestro Pokémon!";
+            } else if (score >= 11) {
+                title = "⚔️ Capopalestra Esperto";
+                msg = "Ottimo lavoro! La tua conoscenza è vastissima, ti manca pochissimo per la perfezione.";
+            } else if (score >= 6) {
+                title = "🎒 Allenatore Promettente";
+                msg = "Niente male! Hai una buona base, ma c'è ancora molto da studiare nei cespugli di Kanto.";
+            } else {
+                title = "🥚 Allenatore Novizio (Noob)";
+                msg = "Hai totalizzato pochi punti. Meglio farsi rispiegare le basi dal Professor Oak!";
+            }
+            
+            let htmlBonus = score >= 5 ? `<p style="color: #00f0ff; font-weight: bold; margin-top: 15px;">🏆 OBIETTIVO HUB SBLOCCATO! Hai ottenuto almeno 5 punti!</p>` : "";
+
+            quizBody.innerHTML = `
+                <h3 style="color: #ffcb05; font-size: 1.8rem; margin-top: 20px;">Punteggio: ${score} / ${questions.length}</h3>
+                <h4 style="color: #ffffff; font-size: 1.4rem;">Grado: ${title}</h4>
+                <p style="color: #b3b3b3; line-height: 1.6;">${msg}</p>
+                ${htmlBonus}
+            `;
+        }
+
+        showQuestion();
+    </script>
+</body>
+</html>
